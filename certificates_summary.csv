@@ -1,4 +1,4 @@
-File,Subject,SubjectCN,Issuer,Serial,Valid From,Valid To
+File,Subject,SubjectCN,Issuer,Serial,ValidFrom,ValidTo
 Gajin Games.cer,"businessCategory=Private Organization, serialNumber=HE 312702, jurisdictionC=CY, C=CY, ST=Nicosia, L=Nicosia, street=Kyriakos Matsis, 10, LILIANA BUILDING, Floor 2, Flat 203, O=Gaijin Network LTD, CN=Gaijin Network LTD, emailAddress=admins@gaijin.net",Gaijin Network LTD,"C=BE, O=GlobalSign nv-sa, CN=GlobalSign Extended Validation CodeSigning CA - SHA256 - G3",0198B7428284660E34BBB07B,Jan 31 10:15:55 2020 GMT,Apr 17 08:13:05 2023 GMT
 FatShark.cer,"C=SE, L=Stockholm, O=Fatshark AB, CN=Fatshark AB",Fatshark AB,"C=US, O=DigiCert, Inc., CN=DigiCert Trusted G4 Code Signing RSA4096 SHA384 2021 CA1",0B2A68F30C61625E5E9EAE97BD5F6787,Jan 24 00:00:00 2022 GMT,Jan 24 23:59:59 2025 GMT
 Zenimax.cer,"C=US, ST=Maryland, L=Rockville, O=Zenimax Media Inc., CN=Zenimax Media Inc.",Zenimax Media Inc.,"C=US, O=DigiCert, Inc., CN=DigiCert Trusted G4 Code Signing RSA4096 SHA384 2021 CA1",04876B9BE087C85CA728856203E51387,Jan 27 00:00:00 2023 GMT,Jan 28 23:59:59 2025 GMT
