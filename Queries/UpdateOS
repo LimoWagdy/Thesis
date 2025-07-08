@@ -1,0 +1,16 @@
+let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
+    "Windows11", "10.0.26100.4351",
+    "Windows10", "10.0.19045.5965",
+    "Windows7", "10.0.7601.26729",
+];
+DeviceTvmSoftwareInventory
+| join kind=inner (
+    DeviceInfo
+    | where DeviceType != "Workstation"
+    | project DeviceId, DeviceType
+) on DeviceId
+| join kind=inner LatestOSVersions on OSPlatform
+| project DeviceName, OSPlatform, OSVersion, DeviceType,
+          IsUpToDate = iff(OSVersion == LatestBuild, "Yes", "No")
+
+//UpdateOS (defender) -> 192506 hits (on thesis customers)
