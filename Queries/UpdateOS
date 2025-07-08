@@ -13,4 +13,5 @@ DeviceTvmSoftwareInventory
 | project DeviceName, OSPlatform, OSVersion, DeviceType,
           IsUpToDate = iff(OSVersion == LatestBuild, "Yes", "No")
 
+//count: | summarize UpToDateDeviceCount = count() by IsUpToDate
 //UpdateOS (defender) -> 192506 hits (on thesis customers)
