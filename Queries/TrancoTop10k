@@ -1,0 +1,30 @@
+let TrancoTop10k = externaldata(Domain: string)
+["https://raw.githubusercontent.com/LimoWagdy/TrancoTop10k/main/top-10k.csv"]
+with (format="csv", ignoreFirstRecord=True);
+
+DeviceNetworkEvents
+| where Timestamp > ago(7d)
+| where InitiatingProcessFileName has_any (
+"chrome.exe", 
+"msedge.exe", 
+"iexplorer.exe", 
+"firefox.exe", 
+"Safari"
+)
+| where isnotempty(RemoteUrl)
+| where RemoteUrl contains "http"
+| where RemoteUrl !contains "localhost"
+| where RemoteUrl !endswith ".local"
+| where RemoteUrl !endswith ".intranet"
+| where RemotePort in (80, 443)
+| where ActionType == "ConnectionSuccess"
+| extend Host = tolower(parse_url(RemoteUrl).Host)
+| extend Host = iff(Host startswith "www.", substring(Host, 4), Host)
+| extend DomainParts = split(Host, ".")
+| extend BaseDomain = strcat(DomainParts[-2], ".", DomainParts[-1])
+| join kind=inner (
+    TrancoTop10k
+) on $left.BaseDomain == $right.Domain
+| project Timestamp, DeviceName, RemoteUrl, BaseDomain
+
+//to retrieve domains not in top10k: join kind=leftanti
