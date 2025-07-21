@@ -1,7 +1,7 @@
 DeviceTvmSoftwareInventory
 | join kind=inner (
     DeviceInfo
-    | where DeviceType = "Workstation"
+    | where DeviceType == "Workstation"
     | project DeviceId
 ) on DeviceId
 | where isnotempty(OSPlatform)
