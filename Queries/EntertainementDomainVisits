@@ -8,4 +8,4 @@ DeviceNetworkEvents
 | extend BaseDomain = strcat(DomainParts[-2], ".", DomainParts[-1])
 | where BaseDomain in~(BlockList)
 | project DeviceId, DeviceName, RemoteUrl, BaseDomain, LocalIP, InitiatingProcessParentFileName
-| summarize UniqueDomainVisits = dcount(BaseDomain) by DeviceId
+| summarize UniqueDomains = dcount(BaseDomain) by DeviceId
