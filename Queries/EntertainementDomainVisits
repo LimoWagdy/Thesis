@@ -1,16 +1,3 @@
-let BlockList = externaldata (type: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domains/Entertainement"]
-with (format='csv', ignoreFirstRecord=false); 
-
-DeviceNetworkEvents
-| where RemoteUrl in~(BlockList)
-|extend VT_domain = iff(isnotempty(RemoteUrl),strcat(@"https://www.virustotal.com/gui/domain/",RemoteUrl),RemoteUrl)
-| project Timestamp, DeviceId, DeviceName, RemoteUrl, LocalIP, InitiatingProcessParentFileName, VT_domain
-| summarize VisitCount = dcount(RemoteUrl) by DeviceId
-
-
-
-
 let BlockList = externaldata (type: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domains/Entertainement"]
 with (format='csv', ignoreFirstRecord=false); 
 
@@ -20,4 +7,5 @@ DeviceNetworkEvents
 | extend DomainParts = split(Host, ".")
 | extend BaseDomain = strcat(DomainParts[-2], ".", DomainParts[-1])
 | where BaseDomain in~(BlockList)
-| summarize VisitCount = dcount(RemoteUrl) by DeviceId
+| project DeviceId, DeviceName, RemoteUrl, BaseDomain, LocalIP, InitiatingProcessParentFileName
+| summarize DomainVisits = dcount(BaseDomain) by DeviceId
