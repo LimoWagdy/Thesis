@@ -15,4 +15,4 @@ DeviceFileCertificateInfo
 	LocalCertList
 ) on $left.Signer == $right.SubjectCN
 | project DeviceId, FileName, Signer, SubjectCN, ValidFrom, ValidTo
-| summarize SignerCount = dcount(Signer) by DeviceId
+| summarize UniqueSigners = dcount(Signer) by DeviceId
