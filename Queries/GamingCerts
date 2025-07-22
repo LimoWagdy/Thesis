@@ -1,0 +1,18 @@
+let LocalCertList = externaldata (
+FileName: string,
+Subject: string,
+SubjectCN: string,
+Issuer: string,
+Serial: string,
+ValidFrom: string,
+ValidTo: string
+)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Certs/Gaming.csv"]
+with (format='csv', ignoreFirstRecord=true);
+
+DeviceFileCertificateInfo
+| join kind=inner (
+	LocalCertList
+) on $left.Signer == $right.SubjectCN
+| project DeviceId, FileName, Signer, SubjectCN, ValidFrom, ValidTo
+| summarize SignerCount = dcount(Signer) by DeviceId
