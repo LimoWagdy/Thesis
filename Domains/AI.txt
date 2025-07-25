@@ -1,0 +1,84 @@
+0.0.0.0 chatgpt.com
+0.0.0.0 www.chatgpt.com
+0.0.0.0 app.chatgpt.com
+0.0.0.0 help.chatgpt.com
+0.0.0.0 api.chatgpt.com
+
+0.0.0.0 openai.com
+0.0.0.0 www.openai.com
+0.0.0.0 platform.openai.com
+0.0.0.0 api.openai.com
+0.0.0.0 help.openai.com
+0.0.0.0 beta.openai.com
+
+0.0.0.0 bard.google.com
+0.0.0.0 ai.google.com
+0.0.0.0 gemini.google.com
+0.0.0.0 labs.google.com
+
+0.0.0.0 claude.ai
+0.0.0.0 www.claude.ai
+0.0.0.0 api.claude.ai
+0.0.0.0 app.claude.ai
+
+0.0.0.0 perplexity.ai
+0.0.0.0 www.perplexity.ai
+0.0.0.0 labs.perplexity.ai
+0.0.0.0 app.perplexity.ai
+
+0.0.0.0 deepseek.com
+0.0.0.0 www.deepseek.com
+0.0.0.0 ai.deepseek.com
+
+0.0.0.0 huggingface.co
+0.0.0.0 www.huggingface.co
+0.0.0.0 api.huggingface.co
+0.0.0.0 datasets.huggingface.co
+0.0.0.0 spaces.huggingface.co
+
+0.0.0.0 runwayml.com
+0.0.0.0 www.runwayml.com
+0.0.0.0 app.runwayml.com
+0.0.0.0 api.runwayml.com
+
+0.0.0.0 midjourney.com
+0.0.0.0 www.midjourney.com
+0.0.0.0 docs.midjourney.com
+
+0.0.0.0 anthropic.com
+0.0.0.0 www.anthropic.com
+0.0.0.0 console.anthropic.com
+
+0.0.0.0 character.ai
+0.0.0.0 www.character.ai
+0.0.0.0 beta.character.ai
+
+0.0.0.0 notion.ai
+0.0.0.0 www.notion.ai
+0.0.0.0 ai.notion.ai
+
+0.0.0.0 you.com
+0.0.0.0 www.you.com
+0.0.0.0 api.you.com
+0.0.0.0 app.you.com
+
+0.0.0.0 phind.com
+0.0.0.0 www.phind.com
+0.0.0.0 app.phind.com
+
+0.0.0.0 replicate.com
+0.0.0.0 www.replicate.com
+0.0.0.0 api.replicate.com
+
+0.0.0.0 copilot.microsoft.com
+0.0.0.0 www.copilot.microsoft.com
+0.0.0.0 chat.copilot.microsoft.com
+
+0.0.0.0 canva.com
+0.0.0.0 www.canva.com
+0.0.0.0 design.canva.com
+0.0.0.0 app.canva.com
+
+0.0.0.0 labelfoo.com
+0.0.0.0 www.labelfoo.com
+0.0.0.0 ai.labelfoo.com
