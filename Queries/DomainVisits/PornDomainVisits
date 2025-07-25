@@ -6,3 +6,4 @@ let BlockList = externaldata(type: string)[@"https://raw.githubusercontent.com/L
 DeviceNetworkEvents
 | where RemoteUrl in~(BlockList)
 | project DeviceId, DeviceName, RemoteUrl
+| summarize UniqueDomains = dcount(BaseDomain) by Timestamp, DeviceId
