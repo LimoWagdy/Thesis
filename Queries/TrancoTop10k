@@ -1,5 +1,5 @@
 let TrancoTop10k = externaldata(Domain: string)
-["https://raw.githubusercontent.com/LimoWagdy/TrancoTop10k/main/top-10k.csv"]
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domains/top-10k.csv"]
 with (format="csv", ignoreFirstRecord=True);
 
 DeviceNetworkEvents
