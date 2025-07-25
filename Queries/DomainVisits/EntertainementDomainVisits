@@ -1,4 +1,4 @@
-let BlockList = externaldata (type: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domains/Entertainement"]
+let BlockList = externaldata (type: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domains/Entertainement.txt"]
 with (format='csv', ignoreFirstRecord=false); 
 
 DeviceNetworkEvents
