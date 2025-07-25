@@ -1,4 +1,4 @@
-let BlockList = externaldata(type: string)[@"https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domains/Malicious"] with (format="csv", ignoreFirstRecord=False)
+let BlockList = externaldata(type: string)[@"https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domains/Malicious.txt"] with (format="csv", ignoreFirstRecord=False)
 | where type !startswith "#"
 | extend RemoteUrl = replace_string(replace_string(type,"0.0.0.0", "")," ","")
 | project RemoteUrl;
