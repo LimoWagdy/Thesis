@@ -3,7 +3,7 @@ FileName: string,
 SubjectCN: string,
 Category: string
 )
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Certs/Gaming.csv"]
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Certs/Gaming%2BPiracy.csv"]
 with (format='csv', ignoreFirstRecord=true);
 
 DeviceFileCertificateInfo
@@ -11,4 +11,6 @@ DeviceFileCertificateInfo
 	LocalCertList
 ) on $left.Signer == $right.SubjectCN
 | extend Gaming = iff(isnotempty(SubjectCN) and Category == "Gaming", 1, 0)
-| project DeviceId, FileName, Signer, Gaming
+| extend Piracy = iff(isnotempty(SubjectCN) and Category == "Piracy", 1, 0)
+| project DeviceId, Signer, Gaming, Piracy
+| summarize Gaming = max(Gaming), Piracy = max(Piracy) by DeviceId
