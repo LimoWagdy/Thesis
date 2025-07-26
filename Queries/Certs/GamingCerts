@@ -1,15 +1,14 @@
 let LocalCertList = externaldata (
 FileName: string,
 SubjectCN: string,
-ValidFrom: string,
-ValidTo: string
+Category: string
 )
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Certs/Gaming.csv"]
 with (format='csv', ignoreFirstRecord=true);
 
 DeviceFileCertificateInfo
-| join kind=inner (
+| join kind=leftouter (
 	LocalCertList
 ) on $left.Signer == $right.SubjectCN
-| project DeviceId, FileName, Signer, SubjectCN, ValidFrom, ValidTo
-| summarize UniqueSigners = dcount(Signer) by DeviceId
+| extend Gaming = iff(isnotempty(SubjectCN) and Category == "Gaming", 1, 0)
+| project DeviceId, FileName, Signer, Gaming
