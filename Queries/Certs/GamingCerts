@@ -1,9 +1,6 @@
 let LocalCertList = externaldata (
 FileName: string,
-Subject: string,
 SubjectCN: string,
-Issuer: string,
-Serial: string,
 ValidFrom: string,
 ValidTo: string
 )
