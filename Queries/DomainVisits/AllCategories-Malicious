@@ -1,6 +1,7 @@
-let BlockList = externaldata(Domain: string, Category: string)[@"https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domains/AI.txt"] with (format="csv", ignoreFirstRecord=False)
+let BlockList = externaldata(Domain: string, Category: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domain/EverythingElse.csv"] with (format="csv", ignoreFirstRecord=True)
 
 DeviceNetworkEvents
+| where DeviceId in (DeviceIdList)
 | join kind=leftouter (
 	BlockList
 ) on $left.RemoteUrl == $right.Domain
@@ -9,10 +10,8 @@ DeviceNetworkEvents
 | extend Entertainement = iff(isnotempty(Domain) and Category == "Entertainement", 1, 0)
 | extend Gambling = iff(isnotempty(Domain) and Category == "Gambling", 1, 0)
 | extend Gaming = iff(isnotempty(Domain) and Category == "Gaming", 1, 0)
-| extend Malicious = iff(isnotempty(Domain) and Category == "Malicious", 1, 0)
 | extend Piracy = iff(isnotempty(Domain) and Category == "Piracy", 1, 0)
 | extend Porn = iff(isnotempty(Domain) and Category == "Porn", 1, 0)
 | extend Social = iff(isnotempty(Domain) and Category == "Social", 1, 0)
-| project Timestamp, DeviceId, DeviceName, RemoteUrl
-| summarize AI = max(AI), Crypto = max(Crypto), Entertainement = max(Entertainement), Gambling = max(Gambling), Gaming = max(Gaming), Malicious = max(Malicious), Piracy = max(Piracy), Porn = max(Porn), Social = max(Social), by DeviceId
-| extend Diversity = iff(AI + Crypto + Gambling + Gaming + Malicious + Piracy + Porn + Social > 1, 1, 0)
+| summarize AI = max(AI), Crypto = max(Crypto), Entertainement = max(Entertainement), Gambling = max(Gambling), Gaming = max(Gaming), Piracy = max(Piracy), Porn = max(Porn), Social = max(Social), by DeviceId
+| extend Diversity = iff(AI + Crypto + Entertainement + Gambling + Gaming + Piracy + Porn + Social > 1, 1, 0)
