@@ -1,4 +1,4 @@
-let BlockList = externaldata(Domain: string, Category: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domain/Malicious.csv"] with (format="csv", ignoreFirstRecord=True)
+let BlockList = externaldata(Domain: string, Category: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/Malicious.csv"] with (format="csv", ignoreFirstRecord=True)
 let DeviceList = dynamic([""]);  // Add DeviceIds here
 
 DeviceNetworkEvents
