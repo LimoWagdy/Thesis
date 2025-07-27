@@ -1,9 +1,11 @@
+let DeviceList = dynamic([""])  // Add DeviceIds here
 let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
     "Windows11", "10.0.26100.4351",
     "Windows10", "10.0.19045.5965",
     "Windows7", "10.0.7601.26729",
 ];
 DeviceTvmSoftwareInventory
+| where DeviceId in (DeviceList)
 | join kind=inner (
     DeviceInfo
     | where DeviceType == "Workstation"
@@ -14,4 +16,3 @@ DeviceTvmSoftwareInventory
           IsUpToDate = iff(OSVersion == LatestBuild, "Yes", "No")
 
 //count: | summarize UpToDateDeviceCount = count() by IsUpToDate
-//UpdateOS (defender) -> 192506 hits (on thesis customers)
