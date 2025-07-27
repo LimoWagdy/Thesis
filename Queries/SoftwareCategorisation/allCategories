@@ -7,6 +7,7 @@ Category: string
 with (format='csv', ignoreFirstRecord=true);
 
 DeviceFileCertificateInfo
+| where DeviceId in (DeviceList)
 | join kind=leftouter (
 	LocalCertList
 ) on $left.Signer == $right.SubjectCN
