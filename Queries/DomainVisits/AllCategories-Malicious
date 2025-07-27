@@ -1,5 +1,5 @@
 let DeviceList = dynamic([""]);  // Add DeviceIds here
-let BlockList = externaldata(Domain: string, Category: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domain/EverythingElse.csv"] with (format="csv", ignoreFirstRecord=True);
+let BlockList = externaldata(Domain: string, Category: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/EverythingElse.csv"] with (format="csv", ignoreFirstRecord=True);
 
 DeviceNetworkEvents
 | where DeviceId in (DeviceList)
