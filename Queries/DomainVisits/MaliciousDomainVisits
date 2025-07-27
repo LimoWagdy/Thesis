@@ -1,9 +1,10 @@
-let BlockList = externaldata(type: string)[@"https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domains/Malicious.txt"] with (format="csv", ignoreFirstRecord=False)
-| where type !startswith "#"
-| extend RemoteUrl = replace_string(replace_string(type,"0.0.0.0", "")," ","")
-| project RemoteUrl;
+let BlockList = externaldata(Domain: string, Category: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Domain/Malicious.csv"] with (format="csv", ignoreFirstRecord=True)
+let DeviceList = dynamic([""]);  // Add DeviceIds here
 
 DeviceNetworkEvents
-| where RemoteUrl in~(BlockList);
-| project DeviceId, DeviceName, RemoteUrl
-| summarize UniqueDomains = dcount(BaseDomain) by Timestamp, DeviceId
+| where DeviceId in (DeviceList)
+| join kind=leftouter (
+	BlockList
+) on $left.RemoteUrl == $right.Domain
+| extend Malicious = iff(isnotempty(Domain) and Category == "Malicious", 1, 0)
+| summarize Malicious = max(Malicious) by DeviceId
