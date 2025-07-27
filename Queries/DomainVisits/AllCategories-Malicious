@@ -15,4 +15,4 @@ DeviceNetworkEvents
 | extend Porn = iff(isnotempty(Domain) and Category == "Porn", 1, 0)
 | extend Social = iff(isnotempty(Domain) and Category == "Social", 1, 0)
 | summarize AI = max(AI), Crypto = max(Crypto), Entertainement = max(Entertainement), Gambling = max(Gambling), Gaming = max(Gaming), Piracy = max(Piracy), Porn = max(Porn), Social = max(Social) by DeviceId
-| extend Diversity = iff(AI + Crypto + Gambling + Gaming + Piracy + Porn + Social > 1, 1, 0)
+| extend Diversity = iff(AI + Crypto + Entertainement + Gambling + Gaming + Piracy + Porn + Social > 1, 1, 0)
