@@ -45,7 +45,7 @@ let NightRatioStats = CategorizedEvents
     TotalCategorized = count(),
     NightCount = sum(IsNight)
   by DeviceId
-| extend NightTimeRatio = strcat(round(todouble(NightCount) / todouble(TotalCategorized) * 100, 2), "%");
+| extend NightRatio = strcat(round(todouble(NightCount) / todouble(TotalCategorized) * 100, 2), "%");
 
 // Step 4: Join all together
 PerCategoryStats
