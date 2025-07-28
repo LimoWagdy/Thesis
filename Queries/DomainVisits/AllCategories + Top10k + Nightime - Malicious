@@ -4,7 +4,7 @@ let DomainList = externaldata(Domain: string, Category: string) ["https://raw.gi
 
 let Top10k = externaldata(Domain: string) ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/top-10k.csv"] with (format="csv", ignoreFirstRecord=True);
 
-// Step 1: Join and flag category + popular domains
+// Step 1: Join and flag category + important domains
 let CategorizedEvents = DeviceNetworkEvents
 //| where DeviceId in (DeviceList)
 | join kind=leftouter (DomainList) on $left.RemoteUrl == $right.Domain
@@ -18,7 +18,7 @@ let CategorizedEvents = DeviceNetworkEvents
     Piracy = iff(Category == "Piracy", 1, 0),
     Social = iff(Category == "Social", 1, 0),
     IsPopular = iff(RemoteUrl in (Top10k), 1, 0)
-| where Category in~ ("Adult", "AI", "Crypto", "Entertainement", "Gambling", "Gaming", "Piracy", "Social");
+| where Category in~ ("Porn", "AI", "Crypto", "Entertainement", "Gambling", "Gaming", "Piracy", "Social");
 
 // Step 2: Compute per-device category flags and diversity
 let PerCategoryStats = CategorizedEvents
@@ -29,15 +29,26 @@ let PerCategoryStats = CategorizedEvents
   by DeviceId
 | extend Diversity = iff(Adult + AI + Crypto + Entertainement + Gambling + Gaming + Piracy + Social > 1, 1, 0);
 
-// Step 3: Compute Top10k ratio
+// Step 3a: Compute Popularity ratio
 let Top10kRatioStats = CategorizedEvents
 | summarize 
     TotalCategorized = count(), 
     Top10kCount = sum(IsPopular)
   by DeviceId
-| extend Top10kRatio = todouble(Top10kCount) / todouble(TotalCategorized);
+| extend NonTop10kRatio = strcat(1 - round(todouble(Top10kCount) / todouble(TotalCategorized) * 100, 2), "%");
+
+// Step 3b: Compute NightTime ratio
+let NightRatioStats = CategorizedEvents
+| extend EventHour = datetime_part("hour", Timestamp)
+| extend IsNight = iff(EventHour >= 19 or EventHour < 7, 1, 0)
+| summarize 
+    TotalCategorized = count(),
+    NightCount = sum(IsNight)
+  by DeviceId
+| extend NightTimeRatio = strcat(round(todouble(NightCount) / todouble(TotalCategorized) * 100, 2), "%");
 
 // Step 4: Join all together
 PerCategoryStats
 | join kind=inner (Top10kRatioStats) on DeviceId
-| project-away DeviceId1
+| join kind=inner (NightRatioStats) on DeviceId
+| project-away DeviceId1, DeviceId2, TotalCategorized1
