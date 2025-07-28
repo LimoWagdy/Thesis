@@ -35,7 +35,7 @@ let Top10kRatioStats = CategorizedEvents
     TotalCategorized = count(), 
     Top10kCount = sum(IsPopular)
   by DeviceId
-| extend NonTop10kRatio = strcat(1 - round(todouble(Top10kCount) / todouble(TotalCategorized) * 100, 2), "%");
+| extend NonTop10kRatio = strcat(round((1 - todouble(Top10kCount) / todouble(TotalCategorized)) * 100, 2), "%");
 
 // Step 3b: Compute NightTime ratio
 let NightRatioStats = CategorizedEvents
