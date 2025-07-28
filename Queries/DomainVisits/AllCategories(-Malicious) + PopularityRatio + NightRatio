@@ -2,12 +2,15 @@ let DeviceList = dynamic([""]);  // Add DeviceIds here
 
 let DomainList = externaldata(Domain: string, Category: string) ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/EverythingElse.csv"] with (format="csv", ignoreFirstRecord=True);
 
+let MaliciousList = externaldata(Domain: string, Category: string) ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/Malicious.csv"] with (format="csv", ignoreFirstRecord=True);
+
 let Top10k = externaldata(Domain: string) ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/top-10k.csv"] with (format="csv", ignoreFirstRecord=True);
 
 // Step 1: Join and flag category + important domains
 let CategorizedEvents = DeviceNetworkEvents
 //| where DeviceId in (DeviceList)
 | join kind=leftouter (DomainList) on $left.RemoteUrl == $right.Domain
+| join kind=leftouter (MaliciousList | project Domain, CategoryM = Category) on $left.RemoteUrl == $right.Domain
 | extend 
     Adult = iff(Category == "Porn", 1, 0),
     AI = iff(Category == "AI", 1, 0),
@@ -15,19 +18,20 @@ let CategorizedEvents = DeviceNetworkEvents
     Entertainement = iff(Category == "Entertainement", 1, 0),
     Gambling = iff(Category == "Gambling", 1, 0),
     Gaming = iff(Category == "Gaming", 1, 0),
+    Malicious = iff(CategoryM == "Malicious", 1, 0),
     Piracy = iff(Category == "Piracy", 1, 0),
     Social = iff(Category == "Social", 1, 0),
     IsPopular = iff(RemoteUrl in (Top10k), 1, 0)
-| where Category in~ ("Porn", "AI", "Crypto", "Entertainement", "Gambling", "Gaming", "Piracy", "Social");
+| where Category in~ ("Porn", "AI", "Crypto", "Entertainement", "Gambling", "Gaming", "Piracy", "Social") or CategoryM == "Malicious";
 
 // Step 2: Compute per-device category flags and diversity
 let PerCategoryStats = CategorizedEvents
 | summarize 
     Adult = max(Adult), AI = max(AI), Crypto = max(Crypto),
-    Entertainement = max(Entertainement), Gambling = max(Gambling), Gaming = max(Gaming),
+    Entertainement = max(Entertainement), Gambling = max(Gambling), Gaming = max(Gaming), Malicious = max(Malicious),
     Piracy = max(Piracy), Social = max(Social)
   by DeviceId
-| extend Diversity = iff(Adult + AI + Crypto + Entertainement + Gambling + Gaming + Piracy + Social > 1, 1, 0);
+| extend Diversity = iff(Adult + AI + Crypto + Entertainement + Gambling + Gaming + Malicious + Piracy + Social > 1, 1, 0);
 
 // Step 3a: Compute Popularity ratio
 let Top10kRatioStats = CategorizedEvents
