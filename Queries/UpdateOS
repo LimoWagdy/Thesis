@@ -1,7 +1,7 @@
 let DeviceList = dynamic([""])  // Add DeviceIds here
 let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
-    "Windows11", "10.0.26100.4652",
-    "Windows10", "10.0.19045.5965",
+    "Windows11", "10.0.26100.4770",
+    "Windows10", "10.0.19045.6159",
     "Windows7", "10.0.7601.26729",
 ];
 DeviceTvmSoftwareInventory
