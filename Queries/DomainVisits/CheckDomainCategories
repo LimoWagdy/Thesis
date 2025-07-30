@@ -1,0 +1,17 @@
+let DeviceList = dynamic([""]);
+
+let DomainList = externaldata(Domain: string, Category: string) 
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/EverythingElse.csv"] 
+with (format="csv", ignoreFirstRecord=True);
+
+let MaliciousList = externaldata(Domain: string, Category: string) 
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/Malicious.csv"] 
+with (format="csv", ignoreFirstRecord=True);
+
+DeviceNetworkEvents
+| where DeviceId in (DeviceList)
+| join kind=leftouter (DomainList) on $left.RemoteUrl == $right.Domain
+| join kind=leftouter (MaliciousList | project Domain, CategoryM = Category) on $left.RemoteUrl == $right.Domain
+| extend IsUnknown = iff(isempty(Category) and isempty(CategoryM), 1, 0)
+| project DeviceId, Timestamp, RemoteUrl, Category, CategoryM, IsUnknown
+| summarize Domains = make_set(RemoteUrl) by Category, CategoryM, IsUnknown
