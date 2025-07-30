@@ -14,8 +14,8 @@ DeviceFileCertificateInfo
 | extend Crypto = iff(isnotempty(SubjectCN) and Category == "Crypto", 1, 0)
 | extend Gambling = iff(isnotempty(SubjectCN) and Category == "Gambling", 1, 0)
 | extend Gaming = iff(isnotempty(SubjectCN) and Category == "Gaming", 1, 0)
-| extend Malware = iff(isnotempty(SubjectCN) and Category == "Malware", 1, 0)
+| extend Suspicious = iff(isnotempty(SubjectCN) and Category == "Suspicious", 1, 0)
 | extend Media = iff(isnotempty(SubjectCN) and Category == "Media", 1, 0)
 | extend Piracy = iff(isnotempty(SubjectCN) and Category == "Piracy", 1, 0)
-| summarize Crypto = max(Crypto), Gambling = max(Gambling), Gaming = max(Gaming), Malware = max(Malware), Media = max(Media), Piracy = max(Piracy) by DeviceId
-| extend Diversity = iff(Crypto + Gambling + Gaming + Malware + Media + Piracy > 1, 1, 0)
+| summarize Crypto = max(Crypto), Gambling = max(Gambling), Gaming = max(Gaming), Suspicious = max(Suspicious), Media = max(Media), Piracy = max(Piracy) by DeviceId
+| extend Diversity = iff(Crypto + Gambling + Gaming + Suspicious + Media + Piracy > 1, 1, 0)
