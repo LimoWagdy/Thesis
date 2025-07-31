@@ -41,3 +41,4 @@ let OSVersionStatus = DeviceTvmSoftwareInventory
 CertCategoryStats
 | join kind=inner (OSVersionStatus) on DeviceId
 | project-away DeviceId1
+| distinct *
