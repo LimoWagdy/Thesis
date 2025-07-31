@@ -1,4 +1,4 @@
-let DeviceList = externaldata(Domain: string, Category: string) 
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string) 
 [""] 
 with (format="csv", ignoreFirstRecord=True);
 
@@ -16,7 +16,7 @@ with (format="csv", ignoreFirstRecord=True);
 
 // Step 1: Categorize events
 let CategorizedEvents = DeviceNetworkEvents
-| join kind=leftouter (DeviceList) on DeviceId
+| join kind=leftouter (DeviceList | project DeviceId) on DeviceId
 | join kind=leftouter (DomainList) on $left.RemoteUrl == $right.Domain
 | join kind=leftouter (MaliciousList | project Domain, CategoryM = Category) on $left.RemoteUrl == $right.Domain
 | extend 
