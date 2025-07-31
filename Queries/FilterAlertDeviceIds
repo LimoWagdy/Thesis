@@ -1,0 +1,7 @@
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string)[""] with (format="csv", ignoreFirstRecord=True);
+
+DeviceInfo
+| join kind=inner(DeviceList) on DeviceId
+| where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
+| where isnotempty(OSPlatform)
+| distinct DeviceId
