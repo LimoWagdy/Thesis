@@ -1,4 +1,6 @@
-let DeviceList = dynamic([""]);  // Add DeviceIds here
+let DeviceList = externaldata(Domain: string, Category: string) 
+[""] 
+with (format="csv", ignoreFirstRecord=True);
 
 let DomainList = externaldata(Domain: string, Category: string) 
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/EverythingElse.csv"] 
@@ -14,6 +16,7 @@ with (format="csv", ignoreFirstRecord=True);
 
 // Step 1: Categorize events
 let CategorizedEvents = DeviceNetworkEvents
+| join kind=leftouter (DeviceList) on DeviceId
 | join kind=leftouter (DomainList) on $left.RemoteUrl == $right.Domain
 | join kind=leftouter (MaliciousList | project Domain, CategoryM = Category) on $left.RemoteUrl == $right.Domain
 | extend 
