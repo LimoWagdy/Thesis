@@ -23,10 +23,11 @@ let CertCategoryStats = DeviceFileCertificateInfo
     Gaming = iff(isnotempty(SubjectCN) and Category == "Gaming", 1, 0),
     Suspicious = iff(isnotempty(SubjectCN) and Category == "Suspicious", 1, 0),
     Media = iff(isnotempty(SubjectCN) and Category == "Media", 1, 0),
-    Piracy = iff(isnotempty(SubjectCN) and Category == "Piracy", 1, 0)
+    Piracy = iff(isnotempty(SubjectCN) and Category == "Piracy", 1, 0),
+    Unknown = iff(isempty(SubjectCN) and isempty(Category), 1, 0)
 | summarize 
     Crypto = max(Crypto), Gambling = max(Gambling), Gaming = max(Gaming), 
-    Suspicious = max(Suspicious), Media = max(Media), Piracy = max(Piracy)
+    Suspicious = max(Suspicious), Media = max(Media), Piracy = max(Piracy), Unknown = max(Unknown)
   by DeviceId
 | extend Diversity = iff(Crypto + Gambling + Gaming + Suspicious + Media + Piracy > 1, 1, 0);
 
