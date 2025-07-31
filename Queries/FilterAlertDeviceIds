@@ -4,4 +4,5 @@ DeviceInfo
 | join kind=inner(DeviceList) on DeviceId
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | where isnotempty(OSPlatform)
+| where DeviceType == "Workstation"
 | distinct DeviceId
