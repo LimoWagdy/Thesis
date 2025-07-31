@@ -1,8 +1,6 @@
-let DeviceList = dynamic([""]);  // Add DeviceIds here
-let LocalCertList = externaldata (
-SubjectCN: string,
-Category: string
-)
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/SecurityAlertsID.csv"] with (format="csv", ignoreFirstRecord=True);
+
+let LocalCertList = externaldata (SubjectCN: string, Category: string)
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Certs/AllCombined.csv"]
 with (format='csv', ignoreFirstRecord=true);
 
