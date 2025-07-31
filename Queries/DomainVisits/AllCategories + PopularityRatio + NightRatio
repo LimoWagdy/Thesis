@@ -1,5 +1,5 @@
 let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string) 
-[""] 
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/SecurityAlertsID.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
 let DomainList = externaldata(Domain: string, Category: string) 
@@ -16,7 +16,7 @@ with (format="csv", ignoreFirstRecord=True);
 
 // Step 1: Categorize events
 let CategorizedEvents = DeviceNetworkEvents
-| join kind=leftouter (DeviceList | project DeviceId) on DeviceId
+| join kind=inner (DeviceList | project DeviceId) on DeviceId
 | join kind=leftouter (DomainList) on $left.RemoteUrl == $right.Domain
 | join kind=leftouter (MaliciousList | project Domain, CategoryM = Category) on $left.RemoteUrl == $right.Domain
 | extend 
@@ -68,4 +68,5 @@ let NightRatioStats = CategorizedEvents
 PerCategoryStats
 | join kind=leftouter (Top10kRatioStats) on DeviceId
 | join kind=leftouter (NightRatioStats) on DeviceId
-| project-away DeviceId1, DeviceId2, TotalCategorized1
+| project-away DeviceId1, DeviceId2, TotalCategorized1, TotalCategorized, Top10kCount, NightCount
+| distinct *
