@@ -16,6 +16,7 @@ with (format="csv", ignoreFirstRecord=True);
 
 // Step 1: Categorize events
 let CategorizedEvents = DeviceNetworkEvents
+| where Timestamp > ago(3d)
 | join kind=inner (DeviceList | project DeviceId) on DeviceId
 | join kind=leftouter (DomainList | project Domain, Category) on $left.RemoteUrl == $right.Domain
 | join kind=leftouter (MaliciousList | project Domain, CategoryM = Category) on $left.RemoteUrl == $right.Domain
