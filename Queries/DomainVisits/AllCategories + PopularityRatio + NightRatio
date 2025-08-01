@@ -17,7 +17,7 @@ with (format="csv", ignoreFirstRecord=True);
 // Step 1: Categorize events
 let CategorizedEvents = DeviceNetworkEvents
 | join kind=inner (DeviceList | project DeviceId) on DeviceId
-| join kind=leftouter (DomainList) on $left.RemoteUrl == $right.Domain
+| join kind=leftouter (DomainList | project Domain, Category) on $left.RemoteUrl == $right.Domain
 | join kind=leftouter (MaliciousList | project Domain, CategoryM = Category) on $left.RemoteUrl == $right.Domain
 | extend 
     Adult = iff(Category == "Porn", 1, 0),
