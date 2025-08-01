@@ -1,0 +1,11 @@
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/SecurityAlertsID.csv"]
+with (format="csv", ignoreFirstRecord=true);
+
+DeviceInfo
+| join kind=leftanti (DeviceList) on DeviceId
+| where isnotempty(OSPlatform)
+| where OSPlatform !contains "Server" and OSPlatform !contains "WVD" and OSPlatform != "macOS"
+| where DeviceType == "Workstation"
+| distinct DeviceId
+| take 6
