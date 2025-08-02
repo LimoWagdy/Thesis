@@ -1,0 +1,17 @@
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/testRandomPool"]
+with (format="csv", ignoreFirstRecord=true);
+
+let LocalCertList = externaldata(SubjectCN: string, Category: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/SoftwareCerts/AllCombined.csv"]
+with (format="csv", ignoreFirstRecord=true);
+
+let TotalDevices = toscalar(DeviceList | summarize count());
+
+// Calculate file popularity per category
+DeviceFileCertificateInfo
+| join kind=inner (DeviceList) on DeviceId
+| join kind=leftouter (LocalCertList) on $left.Signer == $right.SubjectCN
+| where isnotempty(Category)
+| summarize DeviceCount = dcount(DeviceId) by Signer, Category
+| extend Popularity = round((todouble(DeviceCount) / TotalDevices) * 100, 2)
