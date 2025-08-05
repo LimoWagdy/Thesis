@@ -2,6 +2,7 @@ let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:stri
 
 DeviceInfo
 | join kind=inner(DeviceList) on DeviceId
+| where OSPlatform !in~ ("Linux", "IOS", "Android")
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | where isnotempty(OSPlatform)
 | where DeviceType == "Workstation"
