@@ -4,6 +4,7 @@ let AlertIds = externaldata(Customer: string, Workspace: string, DeviceId:string
 DeviceInfo
 | join kind=leftanti (AlertIds) on DeviceId
 | where DeviceType == "Workstation"
+| where OSPlatform !in~ ("Linux", "IOS", "Android")
 | where isnotempty(OSPlatform)
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD" and OSPlatform != "macOS" //modify accordingly
 | distinct DeviceId
