@@ -29,7 +29,7 @@ let CertCategoryStats = DeviceFileCertificateInfo
     Crypto = max(Crypto), Gambling = max(Gambling), Gaming = max(Gaming), 
     Suspicious = max(Suspicious), Media = max(Media), Piracy = max(Piracy), Unknown = max(Unknown)
   by DeviceId
-| extend Diversity = iff(Crypto + Gambling + Gaming + Suspicious + Media + Piracy > 1, 1, 0);
+| extend Diversity = Crypto + Gambling + Gaming + Suspicious + Media + Piracy;
 
 // OS version check
 let OSVersionStatus = DeviceTvmSoftwareInventory
