@@ -1,5 +1,5 @@
 let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/SecurityAlertsID.csv"]
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertIds.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
 let LocalCertList = externaldata(SubjectCN: string, Category: string)
