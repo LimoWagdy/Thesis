@@ -1,4 +1,4 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/SecurityAlertsID.csv"] with (format="csv", ignoreFirstRecord=True);
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertsIds.csv"] with (format="csv", ignoreFirstRecord=True);
 
 DeviceInfo
 | join kind=inner(DeviceList) on DeviceId
