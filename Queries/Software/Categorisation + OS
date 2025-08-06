@@ -36,7 +36,7 @@ let OSVersionStatus = DeviceTvmSoftwareInventory
 | join kind=inner (DeviceList | project DeviceId) on DeviceId
 | join kind=inner LatestOSVersions on OSPlatform
 | project DeviceId, OSPlatform, OSVersion, 
-          IsUpToDate = iff(OSVersion == LatestBuild, "Yes", "No");
+          IsUpToDate = iff(OSVersion == LatestBuild, 1, 0);
 
 // Final join
 CertCategoryStats
