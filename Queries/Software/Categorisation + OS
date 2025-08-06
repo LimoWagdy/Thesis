@@ -43,3 +43,5 @@ CertCategoryStats
 | join kind=inner (OSVersionStatus) on DeviceId
 | project-away DeviceId1
 | distinct *
+
+//leftanti in DeviceList table joins to retrieve controls
