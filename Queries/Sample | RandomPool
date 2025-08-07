@@ -3,7 +3,7 @@ let AlertIds = externaldata(Customer: string, Workspace: string, DeviceId: strin
 with (format="csv", ignoreFirstRecord=true);
 
 DeviceTvmSoftwareInventory
-| join kind=leftanti (AlertIds) on DeviceId
+//| join kind=leftanti (AlertIds) on DeviceId
 | join kind=inner (DeviceInfo | where DeviceType == "Workstation") on DeviceId
 | where isnotempty(OSPlatform)
 | where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS")
