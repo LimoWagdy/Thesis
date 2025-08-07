@@ -22,7 +22,7 @@ let FileNameMatches = datatable(Signer: string, FileName: string, Category: stri
 ];
 
 // Branch 1: Match by Signer AND FileName for specific entries
-let SpecificMatchStats = DeviceFileCertificateInfo
+let FileMatchStats = DeviceFileCertificateInfo
 | join kind=inner (DeviceList | project DeviceId) on DeviceId
 | join kind=inner (
     DeviceFileEvents
@@ -57,7 +57,7 @@ let GeneralMatchStats = DeviceFileCertificateInfo
     Unknown = iff(isempty(Category), 1, 0);
 
 // Combine both
-let CertCategoryStats = union SpecificMatchStats, GeneralMatchStats
+let CertCategoryStats = union FileMatchStats, GeneralMatchStats
 | summarize 
     Crypto = max(Crypto), Gambling = max(Gambling), Gaming = max(Gaming),
     Suspicious = max(Suspicious), Media = max(Media), Piracy = max(Piracy), Unknown = max(Unknown)
