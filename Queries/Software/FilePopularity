@@ -1,17 +1,48 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
+let RandomPool = externaldata(Customer: string, Workspace: string, DeviceId: string)
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/testRandomPool"]
 with (format="csv", ignoreFirstRecord=true);
 
-let LocalCertList = externaldata(SubjectCN: string, Category: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/SoftwareCerts/AllCombined.csv"]
+let LocalCertList = externaldata(SubjectCN: string, File: string, Category: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/SoftwareCerts/Certs.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
-let TotalDevices = toscalar(DeviceList | summarize count());
+let FileNameMatches = datatable(Signer: string, FileName: string, Category: string) [
+    "Apple Inc.", "iTunes.exe", "Media",
+    "Kakao Corp.", "PotPlayerMini64.exe", "Media",
+    "Microsoft Corporation", "MinecraftInstaller.exe", "Gaming"
+];
 
-// Calculate file popularity per category
-DeviceFileCertificateInfo
-| join kind=inner (DeviceList) on DeviceId
-| join kind=leftouter (LocalCertList) on $left.Signer == $right.SubjectCN
+let TotalDevices = toscalar(RandomPool | summarize dcount(DeviceId));
+
+// Branch 1: Specific matches using Signer + FileName
+let SpecificMatchStats = DeviceFileCertificateInfo
+| join kind=inner (RandomPool | project DeviceId) on DeviceId
+| join kind=inner (
+    DeviceFileEvents
+    | project DeviceId, SHA1, FileName
+) on DeviceId, SHA1
+| join kind=leftouter FileNameMatches on Signer, FileName
 | where isnotempty(Category)
-| summarize DeviceCount = dcount(DeviceId) by Signer, Category
-| extend Popularity = round((todouble(DeviceCount) / TotalDevices) * 100, 2)
+| project DeviceId, Signer, FileName, Category;
+
+// Branch 2: General matches using only Signer
+let GeneralMatchStats = DeviceFileCertificateInfo
+| join kind=inner (RandomPool | project DeviceId) on DeviceId
+| join kind=inner (
+    DeviceFileEvents
+    | project DeviceId, SHA1, FileName
+) on DeviceId, SHA1
+| join kind=leftouter (
+    LocalCertList
+    | project SubjectCN, Category
+) on $left.Signer == $right.SubjectCN
+| where Signer !in ("Apple Inc.", "Kakao Corp.", "Microsoft Corporation")
+| where isnotempty(Category)
+| project DeviceId, Signer, FileName= "", Category;
+
+// Combine both and calculate prevalence
+union SpecificMatchStats, GeneralMatchStats
+| extend TotalDevices = TotalDevices
+| summarize DevicesWithMatch = dcount(DeviceId) by Signer, Category, FileName, TotalDevices
+
+//Calculate prevalence by counting all DevicesWithMatch for each Signer in Excel and dividing by TotalDevices
