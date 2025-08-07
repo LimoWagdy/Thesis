@@ -1,11 +1,11 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/SecurityAlertsID.csv"]
+let AlertIds = externaldata(Customer: string, Workspace: string, DeviceId: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertsIds.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
-DeviceInfo
-| join kind=leftanti (DeviceList) on DeviceId
+DeviceTvmSoftwareInventory
+| join kind=leftanti (AlertIds) on DeviceId
+| join kind=inner (DeviceInfo | where DeviceType == "Workstation") on DeviceId
 | where isnotempty(OSPlatform)
-| where OSPlatform !contains "Server" and OSPlatform !contains "WVD" and OSPlatform != "macOS"
-| where DeviceType == "Workstation"
+| where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS")
+| where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | distinct DeviceId
-| take 6
