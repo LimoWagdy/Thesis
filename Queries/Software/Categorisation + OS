@@ -31,12 +31,8 @@ let FileMatchStats = DeviceFileCertificateInfo
 | join kind=leftouter FileNameMatches on Signer, FileName
 | where isnotempty(Category)
 | extend 
-    Crypto = iff(Category == "Crypto", 1, 0),
-    Gambling = iff(Category == "Gambling", 1, 0),
     Gaming = iff(Category == "Gaming", 1, 0),
-    Suspicious = iff(Category == "Suspicious", 1, 0),
     Media = iff(Category == "Media", 1, 0),
-    Piracy = iff(Category == "Piracy", 1, 0),
     Unknown = 0;
 
 // Branch 2: General Signer-only match for other entries
