@@ -2,30 +2,63 @@ let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: str
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertIds.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
-let LocalCertList = externaldata(SubjectCN: string, Category: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/SoftwareCerts/AllCombined.csv"]
+let LocalCertList = externaldata(SubjectCN: string, File: string, Category: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/SoftwareCerts/FileNameTest.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
 let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
     "Windows11", "10.0.26100.4770",
     "Windows10", "10.0.19045.6159",
+    "Windows7", "10.0.7601.26729",
     "macOS", "15.6.0.0"
 ];
 
-// Certificate-based category flags
-let CertCategoryStats = DeviceFileCertificateInfo
+// Define specific (Signer, FileName) rules to match on both fields
+let FileNameMatches = datatable(Signer: string, FileName: string, Category: string) [
+    "Apple Inc.", "iTunes.exe", "Media",
+    "Kakao Corp.", "PotPlayerMini64.exe", "Media",
+    "Microsoft Corporation", "MinecraftInstaller.exe", "Gaming"
+];
+
+// Branch 1: Match by Signer AND FileName for specific entries
+let SpecificMatchStats = DeviceFileCertificateInfo
 | join kind=inner (DeviceList | project DeviceId) on DeviceId
-| join kind=leftouter (LocalCertList) on $left.Signer == $right.SubjectCN
+| join kind=inner (
+    DeviceFileEvents
+    | project DeviceId, SHA1, FileName
+) on DeviceId, SHA1
+| join kind=leftouter FileNameMatches on Signer, FileName
+| where isnotempty(Category)
 | extend 
-    Crypto = iff(isnotempty(SubjectCN) and Category == "Crypto", 1, 0),
-    Gambling = iff(isnotempty(SubjectCN) and Category == "Gambling", 1, 0),
-    Gaming = iff(isnotempty(SubjectCN) and Category == "Gaming", 1, 0),
-    Suspicious = iff(isnotempty(SubjectCN) and Category == "Suspicious", 1, 0),
-    Media = iff(isnotempty(SubjectCN) and Category == "Media", 1, 0),
-    Piracy = iff(isnotempty(SubjectCN) and Category == "Piracy", 1, 0),
-    Unknown = iff(isempty(SubjectCN) and isempty(Category), 1, 0)
+    Crypto = iff(Category == "Crypto", 1, 0),
+    Gambling = iff(Category == "Gambling", 1, 0),
+    Gaming = iff(Category == "Gaming", 1, 0),
+    Suspicious = iff(Category == "Suspicious", 1, 0),
+    Media = iff(Category == "Media", 1, 0),
+    Piracy = iff(Category == "Piracy", 1, 0),
+    Unknown = 0;
+
+// Branch 2: General Signer-only match for other entries
+let GeneralMatchStats = DeviceFileCertificateInfo
+| join kind=inner (DeviceList | project DeviceId) on DeviceId
+| join kind=leftouter (
+    LocalCertList
+    | project SubjectCN, Category
+) on $left.Signer == $right.SubjectCN
+| where Signer !in ("Apple Inc.", "Kakao Corp.", "Microsoft Corporation")
+| extend 
+    Crypto = iff(Category == "Crypto", 1, 0),
+    Gambling = iff(Category == "Gambling", 1, 0),
+    Gaming = iff(Category == "Gaming", 1, 0),
+    Suspicious = iff(Category == "Suspicious", 1, 0),
+    Media = iff(Category == "Media", 1, 0),
+    Piracy = iff(Category == "Piracy", 1, 0),
+    Unknown = iff(isempty(Category), 1, 0);
+
+// Combine both
+let CertCategoryStats = union SpecificMatchStats, GeneralMatchStats
 | summarize 
-    Crypto = max(Crypto), Gambling = max(Gambling), Gaming = max(Gaming), 
+    Crypto = max(Crypto), Gambling = max(Gambling), Gaming = max(Gaming),
     Suspicious = max(Suspicious), Media = max(Media), Piracy = max(Piracy), Unknown = max(Unknown)
   by DeviceId
 | extend Diversity = Crypto + Gambling + Gaming + Suspicious + Media + Piracy;
@@ -40,7 +73,5 @@ let OSVersionStatus = DeviceTvmSoftwareInventory
 // Final join
 CertCategoryStats
 | join kind=inner (OSVersionStatus) on DeviceId
-| project-away DeviceId1
+| project-away DeviceId1, OSVersion
 | distinct *
-
-//leftanti in DeviceList table joins to retrieve controls
