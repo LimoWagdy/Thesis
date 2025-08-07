@@ -3,7 +3,7 @@ let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: str
 with (format="csv", ignoreFirstRecord=true);
 
 let LocalCertList = externaldata(SubjectCN: string, File: string, Category: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/SoftwareCerts/FileNameTest.csv"]
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/SoftwareCerts/Certs.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
 let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
