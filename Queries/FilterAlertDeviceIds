@@ -1,7 +1,7 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertsIds.csv"] with (format="csv", ignoreFirstRecord=True);
+let AlertIds = externaldata(Customer: string, Workspace: string, DeviceId:string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertsIds.csv"] with (format="csv", ignoreFirstRecord=True);
 
 DeviceInfo
-| join kind=inner(DeviceList) on DeviceId
+| join kind=inner(AlertIds) on DeviceId
 | where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS")
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | where isnotempty(OSPlatform)
