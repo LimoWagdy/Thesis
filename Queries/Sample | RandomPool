@@ -9,4 +9,4 @@ DeviceTvmSoftwareInventory
 | where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS", "Windows8", "Windows7", "WindowsXp", "WindowsVista")
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | distinct DeviceId
-| take 120 // sample size 8,655
+| take 111 // sample size 8,655
