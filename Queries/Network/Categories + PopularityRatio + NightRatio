@@ -52,7 +52,7 @@ let Top10kRatioStats = CategorizedEvents
     TotalCategorized = count(), 
     Top10kCount = sum(IsPopular)
   by DeviceId
-| extend NonTop10kRatio = strcat(round((1 - todouble(Top10kCount) / todouble(TotalCategorized)) * 100, 2), "%");
+| extend NonTop10kRatio = round((1 - todouble(Top10kCount) / todouble(TotalCategorized)) * 100, 2);
 
 // Step 3b: Night ratio (excluding Unknown domains from denominator)
 let NightRatioStats = CategorizedEvents
@@ -63,7 +63,7 @@ let NightRatioStats = CategorizedEvents
     TotalCategorized = count(),
     NightCount = sum(IsNight)
   by DeviceId
-| extend NightRatio = strcat(round(todouble(NightCount) / todouble(TotalCategorized) * 100, 2), "%");
+| extend NightRatio = round(todouble(NightCount) / todouble(TotalCategorized) * 100, 2);
 
 // Step 4: Join all
 PerCategoryStats
