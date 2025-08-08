@@ -1,5 +1,5 @@
 let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string) 
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertIds.csv"] 
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/RandomSampleCases.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
 let DomainList = externaldata(Domain: string, Category: string) 
