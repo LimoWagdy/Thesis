@@ -4,7 +4,7 @@ with (format="csv", ignoreFirstRecord=true);
 
 DeviceTvmSoftwareInventory
 //| join kind=leftanti (DeviceList) on DeviceId
-| join kind=inner (DeviceInfo | where DeviceType == "Workstation") on DeviceId
+| join kind=inner (DeviceInfo | where DeviceType == "Workstation" | project DeviceId, DeviceType) on DeviceId
 | where isnotempty(OSPlatform)
 | where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS", "Windows8", "Windows7", "WindowsXp", "WindowsVista")
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
