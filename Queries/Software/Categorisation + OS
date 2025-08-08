@@ -8,9 +8,7 @@ with (format="csv", ignoreFirstRecord=true);
 
 let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
     "Windows11", "10.0.26100.4770",
-    "Windows10", "10.0.19045.6159",
-    "Windows7", "6.1.7601.26729",
-    "WindowsXp", "5.1.2600.5512"
+    "Windows10", "10.0.19045.6159"
 ];
 
 // Define specific (Signer, FileName) rules to match on both fields
