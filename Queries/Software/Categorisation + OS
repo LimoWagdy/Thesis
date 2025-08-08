@@ -57,7 +57,7 @@ let CertCategoryStats = union FileMatchStats, GeneralMatchStats
     Crypto = max(Crypto), Gambling = max(Gambling), Gaming = max(Gaming),
     Suspicious = max(Suspicious), Media = max(Media), Piracy = max(Piracy), Unknown = max(Unknown)
   by DeviceId
-| extend Diversity = Crypto + Gambling + Gaming + Suspicious + Media + Piracy;
+| extend Diversity = iff(Crypto + Gambling + Gaming + Media + Piracy + Suspicious > 1, 1, 0);
 
 // OS version check
 let OSVersionStatus = DeviceTvmSoftwareInventory
