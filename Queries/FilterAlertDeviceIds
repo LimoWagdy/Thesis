@@ -1,7 +1,8 @@
 let AlertIds = externaldata(Customer: string, Workspace: string, DeviceId:string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertsIds.csv"] with (format="csv", ignoreFirstRecord=True);
 
-DeviceInfo
+DeviceTvmSoftwareInventory
 | join kind=inner(AlertIds) on DeviceId
+| join kind=inner (DeviceInfo | where DeviceType == "Workstation" | project DeviceId, DeviceType) on DeviceId
 | where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS", "Windows8", "Windows7", "WindowsXp", "WindowsVista")
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | where isnotempty(OSPlatform)
