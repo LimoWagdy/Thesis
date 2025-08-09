@@ -1,6 +1,6 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertIds.csv"]
-with (format="csv", ignoreFirstRecord=true);
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string, AlertTime: string) //optional AlertTime
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertIdswithTime.csv"] 
+with (format="csv", ignoreFirstRecord=True);
 
 let LocalCertList = externaldata(SubjectCN: string, File: string, Category: string)
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/SoftwareCerts/Certs.csv"]
@@ -20,7 +20,9 @@ let FileNameMatches = datatable(Signer: string, FileName: string, Category: stri
 
 // Branch 1: Match by Signer AND FileName for specific entries
 let FileMatchStats = DeviceFileCertificateInfo
-| join kind=inner (DeviceList | project DeviceId) on DeviceId
+| join kind=inner (DeviceList | project DeviceId, AlertTime) on DeviceId 
+| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime)
+| where Timestamp >= startTime and Timestamp < targetTime
 | join kind=inner (
     DeviceFileEvents
     | project DeviceId, SHA1, FileName
@@ -34,7 +36,9 @@ let FileMatchStats = DeviceFileCertificateInfo
 
 // Branch 2: General Signer-only match for other entries
 let GeneralMatchStats = DeviceFileCertificateInfo
-| join kind=inner (DeviceList | project DeviceId) on DeviceId
+| join kind=inner (DeviceList | project DeviceId, AlertTime) on DeviceId
+| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime)
+| where Timestamp >= startTime and Timestamp < targetTime
 | join kind=leftouter (
     LocalCertList
     | project SubjectCN, Category
