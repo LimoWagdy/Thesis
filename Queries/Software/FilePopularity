@@ -1,5 +1,5 @@
 let RandomPool = externaldata(Customer: string, Workspace: string, DeviceId: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/testRandomPool"]
+["https://github.com/LimoWagdy/Thesis/edit/main/Queries/QueryCSVs/RandomPool.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
 let LocalCertList = externaldata(SubjectCN: string, File: string, Category: string)
