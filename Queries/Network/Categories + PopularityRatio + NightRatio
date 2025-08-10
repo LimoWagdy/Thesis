@@ -1,13 +1,9 @@
 let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string) 
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/RandomSampleCases.csv"] 
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/RandomSample.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
 let DomainList = externaldata(Domain: string, Category: string) 
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/EverythingElse.csv"] 
-with (format="csv", ignoreFirstRecord=True);
-
-let MaliciousList = externaldata(Domain: string, Category: string) 
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/Malicious.csv"] 
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/AllCategories.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
 let Top10k = externaldata(Domain: string) 
@@ -16,10 +12,11 @@ with (format="csv", ignoreFirstRecord=True);
 
 // Step 1: Categorize events
 let CategorizedEvents = DeviceNetworkEvents
-| where Timestamp > ago(3d)
+| where Timestamp > ago(14d)
 | join kind=inner (DeviceList | project DeviceId) on DeviceId
+//| extend startTime = todatetime(AlertTime) - 3d, targetTime = todatetime(AlertTime)
+//| where Timestamp >= startTime and Timestamp < targetTime
 | join kind=leftouter (DomainList | project Domain, Category) on $left.RemoteUrl == $right.Domain
-| join kind=leftouter (MaliciousList | project Domain, CategoryM = Category) on $left.RemoteUrl == $right.Domain
 | extend 
     Adult = iff(Category == "Porn", 1, 0),
     AI = iff(Category == "AI", 1, 0),
@@ -29,11 +26,10 @@ let CategorizedEvents = DeviceNetworkEvents
     Gaming = iff(Category == "Gaming", 1, 0),
     Piracy = iff(Category == "Piracy", 1, 0),
     Social = iff(Category == "Social", 1, 0),
-    Malicious = iff(CategoryM == "Malicious", 1, 0),
+    Malicious = iff(Category == "Malicious", 1, 0),
     IsPopular = iff(RemoteUrl in (Top10k), 1, 0),
-    IsUnknown = iff(isempty(Category) and isempty(CategoryM), 1, 0)
-| where Category in~ ("Porn", "AI", "Crypto", "Entertainement", "Gambling", "Gaming", "Piracy", "Social") 
-   or CategoryM == "Malicious" or IsUnknown == 1;
+    IsUnknown = iff(isempty(Category), 1, 0)
+| where Category in~ ("Porn", "AI", "Crypto", "Entertainement", "Gambling", "Gaming", "Piracy", "Social", "Malicious") or IsUnknown == 1;
 
 // Step 2: Per-device category presence + diversity
 let PerCategoryStats = CategorizedEvents
