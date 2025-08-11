@@ -1,5 +1,5 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string) 
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/RandomSample.csv"] 
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string, AlertTime: string) 
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertIdswithTime.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
 let DomainList = externaldata(Domain: string, Category: string) 
@@ -11,11 +11,10 @@ let Top10k = externaldata(Domain: string)
 with (format="csv", ignoreFirstRecord=True);
 
 // Step 1: Categorize events
-let CategorizedEvents = DeviceNetworkEvents
-| where Timestamp > ago(14d)
-| join kind=inner (DeviceList | project DeviceId) on DeviceId
-//| extend startTime = todatetime(AlertTime) - 3d, targetTime = todatetime(AlertTime)
-//| where Timestamp >= startTime and Timestamp < targetTime
+let CategorizedEvents = DeviceList
+| join kind=inner (DeviceNetworkEvents | project DeviceId, Timestamp, RemoteUrl) on DeviceId
+| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime)
+| where Timestamp >= startTime and Timestamp < targetTime
 | join kind=leftouter (DomainList | project Domain, Category) on $left.RemoteUrl == $right.Domain
 | extend 
     Adult = iff(Category == "Porn", 1, 0),
