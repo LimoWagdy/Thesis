@@ -1,10 +1,9 @@
-let AlertIds = externaldata(Customer: string, Workspace: string, DeviceId:string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertsIds.csv"] with (format="csv", ignoreFirstRecord=True);
+let MalwareDevices = externaldata(Customer: string, Workspace: string, DeviceId:string, AlertTime: string)["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/UnfilteredMalwareEncounters.csv"] with (format="csv", ignoreFirstRecord=True);
 
 DeviceTvmSoftwareInventory
-| join kind=inner(AlertIds) on DeviceId
-| join kind=inner (DeviceInfo | where DeviceType == "Workstation" | project DeviceId, DeviceType) on DeviceId
+| join kind=inner(MalwareDevices) on DeviceId
+| join kind=inner (DeviceInfo| where DeviceType == "Workstation" | project DeviceId, DeviceType) on DeviceId
 | where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS", "Windows8", "Windows7", "WindowsXp", "WindowsVista")
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | where isnotempty(OSPlatform)
-| where DeviceType == "Workstation"
-| distinct DeviceId
+| distinct DeviceId, AlertTime
