@@ -1,12 +1,13 @@
 let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertsIds.csv"]
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/MalwareEncounters.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
 DeviceTvmSoftwareInventory
-//| join kind=leftanti (DeviceList) on DeviceId
-| join kind=inner (DeviceInfo | where DeviceType == "Workstation" | project DeviceId, DeviceType) on DeviceId
+| join kind=leftanti (DeviceList) on DeviceId
+| join kind=inner (DeviceInfo | project DeviceId, DeviceType) on DeviceId
 | where isnotempty(OSPlatform)
 | where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS", "Windows8", "Windows7", "WindowsXp", "WindowsVista")
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
+| where DeviceType == "Workstation"
 | distinct DeviceId
 | take 110 // sample size 8,650
