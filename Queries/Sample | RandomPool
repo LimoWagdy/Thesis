@@ -1,9 +1,9 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
+let MalwareDevices = externaldata(Customer: string, Workspace: string, DeviceId: string)
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/MalwareEncounters.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
 DeviceTvmSoftwareInventory
-| join kind=leftanti (DeviceList) on DeviceId
+| join kind=leftanti (MalwareDevices) on DeviceId
 | join kind=inner (DeviceInfo | project DeviceId, DeviceType) on DeviceId
 | where isnotempty(OSPlatform)
 | where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS", "Windows8", "Windows7", "WindowsXp", "WindowsVista")
