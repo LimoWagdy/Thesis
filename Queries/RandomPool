@@ -1,0 +1,19 @@
+let ControlDevices = externaldata(Customer: string, Workspace: string, DeviceId: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/ControlSample.csv"]
+with (format="csv", ignoreFirstRecord=true);
+
+let MalwareDevices = externaldata(Customer: string, Workspace: string, DeviceId: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/ControlSample.csv"]
+with (format="csv", ignoreFirstRecord=true);
+
+DeviceTvmSoftwareInventory
+| join kind=leftanti (ControlDevices) on DeviceId
+| join kind=leftanti (MalwareDevices) on DeviceId
+| join kind=inner (DeviceInfo | project DeviceId, DeviceType) on DeviceId
+| where isnotempty(OSPlatform)
+| where isnotempty(DeviceId)
+| where OSPlatform !in~ ("IOS", "Android", "Linux", "Windows", "macOS", "Windows8", "Windows7", "WindowsXp", "WindowsVista")
+| where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
+| where DeviceType == "Workstation"
+| distinct DeviceId
+| take 130 // sample size 10,552
