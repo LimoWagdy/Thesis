@@ -38,7 +38,7 @@ let PerCategoryStats = CategorizedEvents
     Gaming = max(Gaming), Malicious = max(Malicious),
     Piracy = max(Piracy), Social = max(Social), Unknown = max(IsUnknown)
   by DeviceId
-| extend Diversity = iff(Adult + AI + Crypto + Entertainement + Gambling + Gaming + Malicious + Piracy + Social > 1, 1, 0);
+| extend Diversity = Adult + AI + Crypto + Entertainement + Gambling + Gaming + Malicious + Piracy + Social;
 
 // Step 3a: Popularity ratio (excluding Unknown domains from denominator)
 let Top10kRatioStats = CategorizedEvents
