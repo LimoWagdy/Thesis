@@ -13,8 +13,8 @@ with (format="csv", ignoreFirstRecord=True);
 // Step 1: Categorize events
 let CategorizedEvents = DeviceList
 | join kind=inner (DeviceNetworkEvents | project DeviceId, Timestamp, RemoteUrl) on DeviceId
-| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime)
-| where Timestamp >= startTime and Timestamp < targetTime
+| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime) //for cases
+| where Timestamp >= startTime and Timestamp < targetTime //for cases
 | join kind=leftouter (DomainList | project Domain, Category) on $left.RemoteUrl == $right.Domain
 | extend 
     Adult = iff(Category == "Porn", 1, 0),
