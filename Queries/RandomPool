@@ -3,7 +3,7 @@ let ControlDevices = externaldata(Customer: string, Workspace: string, DeviceId:
 with (format="csv", ignoreFirstRecord=true);
 
 let MalwareDevices = externaldata(Customer: string, Workspace: string, DeviceId: string)
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/ControlSample.csv"]
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/MalwareEncounters.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
 DeviceTvmSoftwareInventory
