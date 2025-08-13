@@ -1,4 +1,4 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string, AlertTime: string) //take out AlertTime for controls 
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string, AlertTime: string) //adjust for list 
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertIdswithTime.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
