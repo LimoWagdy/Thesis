@@ -64,5 +64,6 @@ let NightRatioStats = CategorizedEvents
 PerCategoryStats
 | join kind=leftouter (Top10kRatioStats) on DeviceId
 | join kind=leftouter (NightRatioStats) on DeviceId
-| project-away DeviceId1, DeviceId2, TotalCategorized1, TotalCategorized, Top10kCount, NightCount
+| join kind=leftouter (DeviceTvmSoftwareInventory | project DeviceId, OSPlatform) on DeviceId
+| project-away DeviceId1, DeviceId2, DeviceId3, TotalCategorized1, TotalCategorized, Top10kCount, NightCount
 | distinct *
