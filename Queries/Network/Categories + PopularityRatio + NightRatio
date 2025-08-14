@@ -1,5 +1,5 @@
 let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string, AlertTime: string) //adjust for list 
-["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertIdswithTime.csv"] 
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/MalwareEncounters.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
 let DomainList = externaldata(Domain: string, Category: string) 
@@ -12,7 +12,11 @@ with (format="csv", ignoreFirstRecord=True);
 
 // Step 1: Categorize events
 let CategorizedEvents = DeviceList
-| join kind=inner (DeviceNetworkEvents | project DeviceId, Timestamp, RemoteUrl) on DeviceId
+| join kind=inner (
+       DeviceNetworkEvents 
+       | where Timestamp > ago (14d) // for control and random pool
+       | project DeviceId, Timestamp, RemoteUrl
+) on DeviceId
 | extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime) //for cases
 | where Timestamp >= startTime and Timestamp < targetTime //for cases
 | join kind=leftouter (DomainList | project Domain, Category) on $left.RemoteUrl == $right.Domain
