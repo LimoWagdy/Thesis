@@ -18,11 +18,12 @@ let FileNameMatches = datatable(Signer: string, FileName: string, Category: stri
     "Microsoft Corporation", "MinecraftInstaller.exe", "Gaming"
 ];
 
-// Branch 1: Match by Signer AND FileName for specific entries
+// Match by Signer and FileName for specific entries
 let FileMatchStats = DeviceFileCertificateInfo
 | join kind=inner (DeviceList | project DeviceId, AlertTime) on DeviceId 
-| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime)
-| where Timestamp >= startTime and Timestamp < targetTime
+| where Timestamp > ago (14d) // for control and random pool
+| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime) // for cases
+| where Timestamp >= startTime and Timestamp < targetTime // for cases
 | join kind=inner (
     DeviceFileEvents
     | project DeviceId, SHA1, FileName
@@ -34,7 +35,7 @@ let FileMatchStats = DeviceFileCertificateInfo
     Media = iff(Category == "Media", 1, 0),
     Unknown = 0;
 
-// Branch 2: General Signer-only match for other entries
+// Match by Signer only for other entries
 let GeneralMatchStats = DeviceFileCertificateInfo
 | join kind=inner (DeviceList | project DeviceId, AlertTime) on DeviceId
 | extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime)
