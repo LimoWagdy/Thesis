@@ -1,4 +1,4 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string, AlertTime: string) //optional AlertTime
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId:string, AlertTime: string) //adjust to list
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/AlertIdswithTime.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
@@ -38,8 +38,9 @@ let FileMatchStats = DeviceFileCertificateInfo
 // Match by Signer only for other entries
 let GeneralMatchStats = DeviceFileCertificateInfo
 | join kind=inner (DeviceList | project DeviceId, AlertTime) on DeviceId
-| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime)
-| where Timestamp >= startTime and Timestamp < targetTime
+| where Timestamp > ago (14d) // for control and random pool
+| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime) // for cases
+| where Timestamp >= startTime and Timestamp < targetTime // for cases
 | join kind=leftouter (
     LocalCertList
     | project SubjectCN, Category
