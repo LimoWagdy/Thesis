@@ -1,4 +1,4 @@
-let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string, AlertTime: string)
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/MalwareEncounters.csv"]
 with (format="csv", ignoreFirstRecord=true);
 
@@ -14,18 +14,22 @@ let FileNameMatches = datatable(Signer: string, FileName: string, Category: stri
 
 // Branch 1: Specific matches using Signer + FileName
 let SpecificMatchStats = DeviceFileCertificateInfo
-| join kind=inner (DeviceList | project DeviceId) on DeviceId
+| join kind=inner (DeviceList | project DeviceId, AlertTime) on DeviceId
 | join kind=inner (
     DeviceFileEvents
     | project DeviceId, SHA1, FileName
 ) on DeviceId, SHA1
+| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime) // for cases
+| where Timestamp >= startTime and Timestamp < targetTime // for cases
 | join kind=inner FileNameMatches on Signer, FileName
 | where isnotempty(Category)
 | project DeviceId, Signer, FileName, Category;
 
 // Branch 2: General matches using only Signer
 let GeneralMatchStats = DeviceFileCertificateInfo
-| join kind=inner (DeviceList | project DeviceId) on DeviceId
+| join kind=inner (DeviceList | project DeviceId, AlertTime) on DeviceId
+| extend startTime = todatetime(AlertTime) - 14d, targetTime = todatetime(AlertTime) // for cases
+| where Timestamp >= startTime and Timestamp < targetTime // for cases
 | join kind=inner (
     DeviceFileEvents
     | project DeviceId, SHA1, FileName
