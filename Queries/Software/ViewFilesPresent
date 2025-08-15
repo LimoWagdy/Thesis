@@ -1,0 +1,44 @@
+let DeviceList = externaldata(Customer: string, Workspace: string, DeviceId: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/Queries/QueryCSVs/MalwareEncounters.csv"]
+with (format="csv", ignoreFirstRecord=true);
+
+let LocalCertList = externaldata(SubjectCN: string, File: string, Category: string)
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/SoftwareCerts/Certs.csv"]
+with (format="csv", ignoreFirstRecord=true);
+
+let FileNameMatches = datatable(Signer: string, FileName: string, Category: string) [
+    "Apple Inc.", "iTunes.exe", "Media",
+    "Kakao Corp.", "PotPlayerMini64.exe", "Media",
+    "Microsoft Corporation", "MinecraftInstaller.exe", "Gaming"
+];
+
+// Branch 1: Specific matches using Signer + FileName
+let SpecificMatchStats = DeviceFileCertificateInfo
+| join kind=inner (DeviceList | project DeviceId) on DeviceId
+| join kind=inner (
+    DeviceFileEvents
+    | project DeviceId, SHA1, FileName
+) on DeviceId, SHA1
+| join kind=inner FileNameMatches on Signer, FileName
+| where isnotempty(Category)
+| project DeviceId, Signer, FileName, Category;
+
+// Branch 2: General matches using only Signer
+let GeneralMatchStats = DeviceFileCertificateInfo
+| join kind=inner (DeviceList | project DeviceId) on DeviceId
+| join kind=inner (
+    DeviceFileEvents
+    | project DeviceId, SHA1, FileName
+) on DeviceId, SHA1
+| join kind=inner (
+    LocalCertList
+    | project SubjectCN, Category
+) on $left.Signer == $right.SubjectCN
+| where Signer !in ("Apple Inc.", "Kakao Corp.", "Microsoft Corporation")
+| where isnotempty(Category)
+| project DeviceId, Signer, FileName= "", Category;
+
+// Combine both and view files
+union SpecificMatchStats, GeneralMatchStats
+| distinct *
+| summarize Signers = make_set(Signer) by DeviceId
