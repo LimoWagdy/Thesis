@@ -16,4 +16,4 @@ DeviceTvmSoftwareInventory
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | where DeviceType == "Workstation"
 | distinct DeviceId
-| take 63 // sample size 5,025
+| take 126 // sample size 10,080 (adjust accordingly)
