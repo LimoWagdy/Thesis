@@ -10,7 +10,7 @@ let Top10k = externaldata(Domain: string)
 ["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/top-10k.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
-// Step 1: Categorize events
+// Categorize events
 let CategorizedEvents = DeviceList
 | join kind=inner (
        DeviceNetworkEvents 
@@ -34,7 +34,7 @@ let CategorizedEvents = DeviceList
     IsUnknown = iff(isempty(Category), 1, 0)
 | where Category in~ ("Porn", "AI", "Crypto", "Entertainement", "Gambling", "Gaming", "Piracy", "Social", "Malicious") or IsUnknown == 1;
 
-// Step 2: Per-device category presence + diversity
+// Per-device category presence + diversity
 let PerCategoryStats = CategorizedEvents
 | summarize 
     Adult = max(Adult), AI = max(AI), Crypto = max(Crypto),
@@ -44,7 +44,7 @@ let PerCategoryStats = CategorizedEvents
   by DeviceId
 | extend Diversity = Adult + AI + Crypto + Entertainement + Gambling + Gaming + Malicious + Piracy + Social;
 
-// Step 3a: Popularity ratio (excluding Unknown domains from denominator)
+// Popularity ratio (excluding Unknown domains from denominator)
 let Top10kRatioStats = CategorizedEvents
 | where IsUnknown == 0
 | summarize 
@@ -64,7 +64,7 @@ let NightRatioStats = CategorizedEvents
   by DeviceId
 | extend NightRatio = round(todouble(NightCount) / todouble(TotalCategorized) * 100, 2);
 
-// Step 4: Join all
+// Join all
 PerCategoryStats
 | join kind=leftouter (Top10kRatioStats) on DeviceId
 | join kind=leftouter (NightRatioStats) on DeviceId
