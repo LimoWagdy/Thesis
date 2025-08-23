@@ -11,14 +11,14 @@ let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
     "Windows10", "10.0.19045.6159"
 ];
 
-// Define specific (Signer, FileName) rules to match on both fields
+// Define specific FileNameMatches
 let FileNameMatches = datatable(Signer: string, FileName: string, Category: string) [
     "Apple Inc.", "iTunes.exe", "Media",
     "Kakao Corp.", "PotPlayerMini64.exe", "Media",
     "Microsoft Corporation", "MinecraftInstaller.exe", "Gaming"
 ];
 
-// Match by Signer and FileName for specific entries
+// FileNameMatches
 let FileMatchStats = DeviceFileCertificateInfo
 | join kind=inner (DeviceList | project DeviceId, AlertTime) on DeviceId 
 | where Timestamp > ago (14d) // for control and random pool
@@ -35,7 +35,7 @@ let FileMatchStats = DeviceFileCertificateInfo
     Media = iff(Category == "Media", 1, 0),
     Unknown = 0;
 
-// Match by Signer only for other entries
+// Match by Signer for other entries
 let GeneralMatchStats = DeviceFileCertificateInfo
 | join kind=inner (DeviceList | project DeviceId, AlertTime) on DeviceId
 | where Timestamp > ago (14d) // for control and random pool
@@ -70,7 +70,7 @@ let OSVersionStatus = DeviceTvmSoftwareInventory
 | project DeviceId, OSPlatform, OSVersion, 
           IsUpToDate = iff(OSVersion == LatestBuild, 1, 0);
 
-// Final join
+// Join all
 CertCategoryStats
 | join kind=inner (OSVersionStatus) on DeviceId
 | project-away DeviceId1, OSVersion
